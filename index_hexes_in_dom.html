@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Noodles</title>
+  <style>
+    /*#hex {
+      height: 100px;
+      width: 100px;
+      border: 30px solid #999;
+    }*/
+    /*#hex {
+      height: 100px;
+      width: 100px;
+      border-top: 30px solid #C66;
+      border-bottom: 30px solid #6C6;
+      border-left: 30px solid #66C;
+      border-right: 30px solid #CC6;
+    }*/
+    /*#hex {
+      // full width
+      border-top: 30px solid #C66;
+      border-bottom: 30px solid #6C6;
+      border-left: 30px solid #66C;
+      border-right: 30px solid #CC6;
+    }*/
+    /*#hex {
+      width: 0px;
+      border-top: 30px solid #C66;
+      border-bottom: 30px solid #6C6;
+      border-left: 30px solid #66C;
+      border-right: 30px solid #CC6;
+    }*/
+    /*#hex {
+      width: 0px;
+      border-bottom: 30px solid #6C6;
+      border-left: 30px solid transparent;
+      border-right: 30px solid transparent;
+    }*/
+    /*#hex {
+      width: 0px;
+      border-bottom: 30px solid #6C6;
+      border-left: 52px solid transparent;
+      border-right: 52px solid transparent;
+    }*/
+    /*#hex {
+      width: 0px;
+      border-top: 30px solid #6C6;
+      border-left: 52px solid transparent;
+      border-right: 52px solid transparent;
+    }*/
+    /*#hextop {
+      width: 0px;
+      border-bottom: 30px solid #6C6;
+      border-left: 52px solid transparent;
+      border-right: 52px solid transparent;
+    }
+    #hex {
+      width: 104px;
+      height: 60px;
+      background: #6C6;
+    }
+    #hexbottom {
+      width: 0px;
+      border-top: 30px solid #6C6;
+      border-left: 52px solid transparent;
+      border-right: 52px solid transparent;
+    }*/
+    /*.hexe .left {
+      float: left;
+      width: 0px;
+      border-right: 30px solid #6C6;
+      border-top: 52px solid transparent;
+      border-bottom: 52px solid transparent;
+    }
+
+    .hexe .middle {
+      float: left;
+      height: 104px;
+      width: 60px;
+      background: #6C6;
+    }
+
+    .hexe .right {
+      float: left;
+      width: 0px;
+      border-left: 30px solid #6C6;
+      border-top: 52px solid transparent;
+      border-bottom: 52px solid transparent;
+    }
+
+    .hexo .left {
+      margin-top: -52px;
+      margin-left: -27px;
+      float: left;
+      width: 0px;
+      border-right: 30px solid #6C6;
+      border-top: 52px solid transparent;
+      border-bottom: 52px solid transparent;
+    }
+
+    .hexo .middle {
+      margin-top: -52px;
+      float: left;
+      height: 104px;
+      width: 60px;
+      background: #6C6;
+    }
+
+    .hexo .right {
+      margin-top: -52px;
+      float: left;
+      width: 0px;
+      border-left: 30px solid #6C6;
+      border-top: 52px solid transparent;
+      border-bottom: 52px solid transparent;
+    }*/
+    /* 30, 51.96; -26, -50, 30, 52, 60, 104, 53 */
+    /* 25, 43.30; -22, -40, 24, 43, 50, 86, 44 */
+    .hex {
+      float: left;
+      margin-right: -22px;
+      margin-bottom: -40px;
+    }
+
+    .hex .left {
+      float: left;
+      width: 0;
+      border-right: 24px solid #6C6;
+      border-top: 43px solid transparent;
+      border-bottom: 43px solid transparent;
+    }
+
+    .hex .middle {
+      float: left;
+      width: 50px;
+      height: 86px;
+      background: #6C6;
+    }
+
+    .hex .right {
+      float: left;
+      width: 0;
+      border-left: 24px solid #6C6;
+      border-top: 43px solid transparent;
+      border-bottom: 43px solid transparent;
+    }
+
+    .hex-row {
+      clear: left;
+    }
+
+    .hex.even {
+      margin-top: 44px;
+    }
+  </style>
+</head>
+
+<body>
+  <!--
+  <div class="hexe">
+    <div class="left"></div>
+    <div class="middle"></div>
+    <div class="right"></div>
+  </div>
+  <div class="hexo">
+    <div class="left"></div>
+    <div class="middle"></div>
+    <div class="right"></div>
+  </div>
+  -->
+  <div class="hex-row">
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+  </div>
+  <div class="hex-row">
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+  </div>
+  <div class="hex-row">
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+  </div>
+  <div class="hex-row">
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+  </div>
+  <div class="hex-row">
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+  </div>
+  <div class="hex-row">
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+  </div>
+  <div class="hex-row">
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+  </div>
+  <div class="hex-row">
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex even">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+    <div class="hex">
+      <div class="left"></div>
+      <div class="middle"></div>
+      <div class="right"></div>
+    </div>
+  </div>
+</body>
+
+</html>
