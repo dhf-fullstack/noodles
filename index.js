@@ -466,3 +466,57 @@ let f3 = subscribeToCanvasClick(ev => {
 // first click will log f1, f2, f3
 // successive clicks will log f1,f3 (f2 having been removed, and calling f2() multiple times is a no-op)
 */
+
+const isCorner = (row, col) => {
+  return (
+    (row === 0 && col === 0) ||
+    (row === GRID_HEIGHT - 1 && col === 0) ||
+    (row === 0 && col === GRID_WIDTH - 1) ||
+    (row === GRID_HEIGHT - 1 && col === GRID_WIDTH - 1)
+  )
+}
+
+const isEdge = (row, col) => {
+  return (
+    row === 0 || row === GRID_HEIGHT - 1 || col === 0 || col === GRID_WIDTH - 1
+  )
+}
+
+Array.prototype.choose = function() {
+  return this[Math.floor(Math.random() * this.length)]
+}
+
+const generatePuzzle = () => {
+  // choose a hex at random
+  // choose a piece at random
+  //   if corner, i, c, ), Ш
+  //   if edge,   i, c, ), Ш, |, \, /, K
+  //   else any   i, c, ), Ш, |, \, /, K, Y, X, Ψ
+  // does it fit?
+  //   try all orientations
+  //   if edge or corner, does it point off grid?
+  //   does it fail to connect to an existing contact point?
+  //   if cannot be made to fit, try another piece
+  //   if no pieces work, backtrack
+  // it fits:
+  //    for each of the empty hexes the piece connects:
+  //      recursively fill from that hex
+  //      if failure, backtrack
+
+  let row = Math.floor(Math.random() * GRID_HEIGHT)
+  let col = Math.floor(Math.random() * GRID_WIDTH)
+  let cornerPieces = ['i', 'c', ')', 'Ш']
+  let edgePieces = ['i', 'c', ')', 'Ш', '|', '\\', '/', 'K']
+  let pieces = ['i', 'c', ')', 'Ш', '|', '\\', '/', 'K', 'Y', 'X', 'Ψ']
+  let piece
+  if (isCorner(row, col)) {
+    piece = cornerPieces.choose()
+  } else if (isEdge(row, col)) {
+    piece = edgePieces.choose()
+  } else {
+    piece = pieces.choose()
+  }
+  console.log(row, col, piece)
+}
+
+generatePuzzle()
