@@ -1,10 +1,10 @@
-let canvas = document.getElementById('canvas')
-let c = canvas.getContext('2d')
+const canvas = document.getElementById('canvas')
+const c = canvas.getContext('2d')
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
-let mask = document.createElement('canvas')
-let m = mask.getContext('2d')
+const mask = document.createElement('canvas')
+const m = mask.getContext('2d')
 mask.width = window.innerWidth
 mask.height = window.innerHeight
 
@@ -61,8 +61,8 @@ const renderHex = (ctx, x, y, r, color) => {
 
 const pixelCoordsToHexIndex = (x, y) => {
   // returns [row, col]
-  let c = m.getImageData(x, y, 1, 1).data
-  let h = (c[0] * 256 + c[1]) * 256 + c[2]
+  const c = m.getImageData(x, y, 1, 1).data
+  const h = (c[0] * 256 + c[1]) * 256 + c[2]
   if (h >= GRID_WIDTH * GRID_HEIGHT) {
     /* out of bound should always be #ffffff === 16777215 
        but in testing occasionally got unexpected values.
@@ -72,8 +72,8 @@ const pixelCoordsToHexIndex = (x, y) => {
        are colored [0..((w*h)-1]  */
     return undefined
   } else {
-    let row = Math.floor(h / GRID_WIDTH)
-    let col = h % GRID_WIDTH
+    const row = Math.floor(h / GRID_WIDTH)
+    const col = h % GRID_WIDTH
     return [row, col]
   }
 }
@@ -83,7 +83,7 @@ const canvasClickSubscribers = []
 const subscribeToCanvasClick = f => {
   canvasClickSubscribers.push(f)
   return () => {
-    let i = canvasClickSubscribers.findIndex(e => e === f)
+    const i = canvasClickSubscribers.findIndex(e => e === f)
     if (i >= 0) {
       canvasClickSubscribers.splice(i, 1)
     }
@@ -102,10 +102,10 @@ const unsubscribeGridClick = subscribeToCanvasClick(ev =>
 )
 
 const gridOnClick = (x, y) => {
-  let coords = pixelCoordsToHexIndex(x, y)
+  const coords = pixelCoordsToHexIndex(x, y)
   if (coords != undefined) {
     const [row, col] = coords
-    let [x, y] = hexIndexToCenterCoords(row, col)
+    const [x, y] = hexIndexToCenterCoords(row, col)
     renderHex(c, HEX_X0 + x, HEX_Y0 + y, r, '#ff0000')
   }
 }
@@ -121,7 +121,7 @@ const renderHexGrid = (ctx, x0, y0, R, r) => {
   // outer hexagons of radius R for spacing
   for (let row = 0; row < GRID_HEIGHT; row++) {
     for (let col = 0; col < GRID_WIDTH; col++) {
-      let [x, y] = hexIndexToCenterCoords(row, col)
+      const [x, y] = hexIndexToCenterCoords(row, col)
       renderHex(ctx, x + x0, y + y0, r)
     }
   }
@@ -133,7 +133,7 @@ const renderMaskGrid = (ctx, x0, y0, R, r) => {
   let color = 0
   for (let row = 0; row < GRID_HEIGHT; row++) {
     for (let col = 0; col < GRID_WIDTH; col++) {
-      let [x, y] = hexIndexToCenterCoords(row, col)
+      const [x, y] = hexIndexToCenterCoords(row, col)
       color = row * GRID_WIDTH + col
       renderHex(ctx, x + x0, y + y0, r, color)
     }
@@ -406,7 +406,28 @@ const renderChi = (x, y, orientation, activated, source) => {
 }
 
 const renderK = (x, y, orientation, activated, source) => {
-  alert('K piece - TO DO!')
+  // the K piece.
+  // with the arms pointing left, the bottom branch is at orientation
+  const cos = Math.floor(r * Math.cos(Math.PI / 6))
+  c.save()
+  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.lineWidth = lineWidth
+  c.translate(x, y)
+  c.rotate((Math.PI / 3) * orientation)
+  c.beginPath()
+  c.moveTo(0, cos)
+  c.lineTo(0, -cos)
+  c.rotate(Math.PI / 3)
+  c.moveTo(0, cos)
+  c.lineTo(0, 0)
+  c.rotate(Math.PI / 3)
+  c.moveTo(0, cos)
+  c.lineTo(0, 0)
+  c.stroke()
+  c.restore()
+  if (source) {
+    renderSourceMarker(x, y, orientation)
+  }
 }
 
 const renderSourceMarker = (x, y, orientation, special = false) => {
@@ -503,11 +524,11 @@ const generatePuzzle = () => {
   //      recursively fill from that hex
   //      if failure, backtrack
 
-  let row = Math.floor(Math.random() * GRID_HEIGHT)
-  let col = Math.floor(Math.random() * GRID_WIDTH)
-  let cornerPieces = ['i', 'c', ')', 'Ш']
-  let edgePieces = ['i', 'c', ')', 'Ш', '|', '\\', '/', 'K']
-  let pieces = ['i', 'c', ')', 'Ш', '|', '\\', '/', 'K', 'Y', 'X', 'Ψ']
+  const row = Math.floor(Math.random() * GRID_HEIGHT)
+  const col = Math.floor(Math.random() * GRID_WIDTH)
+  const cornerPieces = ['i', 'c', ')', 'Ш']
+  const edgePieces = ['i', 'c', ')', 'Ш', '|', 'λ', '/', 'K']
+  const pieces = ['i', 'c', ')', 'Ш', '|', 'λ', '/', 'K', 'Y', 'X', 'Ψ']
   let piece
   if (isCorner(row, col)) {
     piece = cornerPieces.choose()
@@ -516,7 +537,55 @@ const generatePuzzle = () => {
   } else {
     piece = pieces.choose()
   }
-  console.log(row, col, piece)
 }
 
 generatePuzzle()
+
+const board = `
+i 5 i 5 ) 0 c 5 i 2 c 5 | 2 i 0
+i 0 | 2 K 2 ) 1 i 5 | 0 i 0 c 2
+) 3 i 0 ) 5 ) 0 | 1 Ψ 2 c 2 i 0
+i 5 Ш 3 ) 5 K 2 Ψ 1 Ш 0 / 5 ) 1
+) 4 λ 1 ) 4 Ψ 1 / 0 ) 3 λ 5 i 2
+| 0 c 5 c 2 i 3 λ 0 ) 0 i 3 ) 0
+| 0 i 3 / 1 / 1 i 3 / 0 ) 0 | 0
+i 3 i 4 i 3 ) 3 i 2 i 3 i 3 i 3
+`.replace(/\s+/g, '')
+
+const source = [3, 0]
+
+const pieceRenderers = {
+  i: renderTerminus,
+  '|': renderStraight,
+  ')': renderBend,
+  c: renderCurve,
+  Ш: renderSha,
+  Y: renderTriskelion,
+  λ: renderLambda,
+  '/': renderLambdaFlipped,
+  Ψ: renderPsi,
+  X: renderChi,
+  K: renderK,
+}
+
+const renderConnector = (row, col, piece, orientation, source) => {
+  const f = pieceRenderers[piece]
+  if (f !== undefined) {
+    f(row, col, orientation, true, source)
+  }
+}
+
+const renderPuzzle = (board, [source_row, source_col]) => {
+  renderHexGrid(c, HEX_X0, HEX_Y0, R, r)
+  for (let row = 0; row < GRID_HEIGHT; row++) {
+    for (let col = 0; col < GRID_WIDTH; col++) {
+      const [x, y] = hexIndexToCenterCoords(row, col)
+      const piece = board.substr((row * GRID_WIDTH + col) * 2, 1)
+      const orientation = board.substr((row * GRID_WIDTH + col) * 2 + 1, 1)
+      const source = row === source_row && col === source_col
+      renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, source)
+    }
+  }
+}
+
+renderPuzzle(board, source)
