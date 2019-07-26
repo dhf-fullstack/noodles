@@ -19,7 +19,7 @@
     "@babel/preset-react": "^7.0.0",
     "eslint": "^5.10.0",
     "eslint-plugin-jest": "^22.1.2",
-    "jest": "^23.6.0",
+    "jest": "^24.8.0",
     "prettier-eslint-cli": "^4.7.1"
   },
   "dependencies": {}
