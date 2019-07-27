@@ -1,3 +1,4 @@
+/*global document, window*/
 const canvas = document.getElementById('canvas')
 const c = canvas.getContext('2d')
 canvas.width = window.innerWidth
@@ -184,7 +185,7 @@ for (let row = 0; row < GRID_HEIGHT; row++) {
         0
 */
 
-const renderTerminus = (x, y, orientation, activated, source) => {
+const renderTerminus = (x, y, orientation, activated, source = false) => {
   // The o- piece.
   // the pipe is at orientation
   const rr = 11
@@ -227,7 +228,7 @@ const renderBend = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderStraight = (x, y, orientation, activated, source) => {
+const renderStraight = (x, y, orientation, activated, source = false) => {
   // the | piece.
   // the "bottom" of the connector is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
@@ -246,7 +247,7 @@ const renderStraight = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderCurve = (x, y, orientation, activated, source) => {
+const renderCurve = (x, y, orientation, activated, source = false) => {
   // the C piece. the "right hand" side is at orientation (so 0 runs from side 0 to side 1)
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   const sin = Math.floor(r * Math.sin(Math.PI / 6))
@@ -264,7 +265,7 @@ const renderCurve = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderSha = (x, y, orientation, activated, source) => {
+const renderSha = (x, y, orientation, activated, source = false) => {
   // the \|/ piece.
   // the center branch is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
@@ -290,7 +291,7 @@ const renderSha = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderTriskelion = (x, y, orientation, activated, source) => {
+const renderTriskelion = (x, y, orientation, activated, source = false) => {
   // the Y piece
   // an arm is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
@@ -315,7 +316,7 @@ const renderTriskelion = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderLambda = (x, y, orientation, activated, source) => {
+const renderLambda = (x, y, orientation, activated, source = false) => {
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
   c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
@@ -335,7 +336,7 @@ const renderLambda = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderLambdaFlipped = (x, y, orientation, activated, source) => {
+const renderLambdaFlipped = (x, y, orientation, activated, source = false) => {
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
   c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
@@ -355,7 +356,7 @@ const renderLambdaFlipped = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderPsi = (x, y, orientation, activated, source) => {
+const renderPsi = (x, y, orientation, activated, source = false) => {
   // the -<- piece
   // the middle arm of the trio is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
@@ -383,7 +384,7 @@ const renderPsi = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderChi = (x, y, orientation, activated, source) => {
+const renderChi = (x, y, orientation, activated, source = false) => {
   // the X piece.
   // the right branch of the "bottom" is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
@@ -405,7 +406,7 @@ const renderChi = (x, y, orientation, activated, source) => {
   }
 }
 
-const renderK = (x, y, orientation, activated, source) => {
+const renderK = (x, y, orientation, activated, source = false) => {
   // the K piece.
   // with the arms pointing left, the bottom branch is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
@@ -507,6 +508,66 @@ Array.prototype.choose = function() {
   return this[Math.floor(Math.random() * this.length)]
 }
 
+/*
+const board = `
+i 5 i 5 ) 0 c 5 i 2 c 5 | 2 i 0
+i 0 | 2 K 2 ) 1 i 5 | 0 i 0 c 2
+) 3 i 0 ) 5 ) 0 | 1 Ψ 2 c 2 i 0
+i 5 Ш 3 ) 5 K 2 Ψ 1 Ш 0 / 5 ) 1
+) 4 λ 1 ) 4 Ψ 1 / 0 ) 3 λ 5 i 2
+| 0 c 5 c 2 i 3 λ 0 ) 0 i 3 ) 0
+| 0 i 3 / 1 / 1 i 3 / 0 ) 0 | 0
+i 3 i 4 i 3 ) 3 i 2 i 3 i 3 i 3
+`.replace(/\s+/g, '')
+
+const source = [3, 0]
+*/
+
+const pieceRenderers = {
+  i: renderTerminus,
+  '|': renderStraight,
+  ')': renderBend,
+  c: renderCurve,
+  Ш: renderSha,
+  Y: renderTriskelion,
+  λ: renderLambda,
+  '/': renderLambdaFlipped,
+  Ψ: renderPsi,
+  X: renderChi,
+  K: renderK,
+}
+
+const renderConnector = (
+  row,
+  col,
+  piece,
+  orientation,
+  activated,
+  source = false
+) => {
+  const f = pieceRenderers[piece]
+  if (f !== undefined) {
+    f(row, col, orientation, activated, source)
+  }
+}
+
+/*
+const renderPuzzle = (board, [source_row, source_col]) => {
+  renderHexGrid(c, HEX_X0, HEX_Y0, R, r)
+  for (let row = 0; row < GRID_HEIGHT; row++) {
+    for (let col = 0; col < GRID_WIDTH; col++) {
+      const [x, y] = hexIndexToCenterCoords(row, col)
+      const piece = board.substr((row * GRID_WIDTH + col) * 2, 1)
+      const orientation = board.substr((row * GRID_WIDTH + col) * 2 + 1, 1)
+      const source = row === source_row && col === source_col
+      renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, true, source)
+    }
+  }
+}
+
+renderPuzzle(board, source)
+*/
+
 const generatePuzzle = () => {
   // choose a hex at random
   // choose a piece at random
@@ -524,68 +585,41 @@ const generatePuzzle = () => {
   //      recursively fill from that hex
   //      if failure, backtrack
 
-  const row = Math.floor(Math.random() * GRID_HEIGHT)
-  const col = Math.floor(Math.random() * GRID_WIDTH)
+  //const row = Math.floor(Math.random() * GRID_HEIGHT)
+  //const col = Math.floor(Math.random() * GRID_WIDTH)
   const cornerPieces = ['i', 'c', ')', 'Ш']
   const edgePieces = ['i', 'c', ')', 'Ш', '|', 'λ', '/', 'K']
   const pieces = ['i', 'c', ')', 'Ш', '|', 'λ', '/', 'K', 'Y', 'X', 'Ψ']
-  let piece
-  if (isCorner(row, col)) {
-    piece = cornerPieces.choose()
-  } else if (isEdge(row, col)) {
-    piece = edgePieces.choose()
-  } else {
-    piece = pieces.choose()
+  const board = new Array(GRID_HEIGHT)
+  for (let i = 0; i < GRID_HEIGHT; i++) {
+    board[i] = new Array(GRID_WIDTH)
   }
-}
-
-generatePuzzle()
-
-const board = `
-i 5 i 5 ) 0 c 5 i 2 c 5 | 2 i 0
-i 0 | 2 K 2 ) 1 i 5 | 0 i 0 c 2
-) 3 i 0 ) 5 ) 0 | 1 Ψ 2 c 2 i 0
-i 5 Ш 3 ) 5 K 2 Ψ 1 Ш 0 / 5 ) 1
-) 4 λ 1 ) 4 Ψ 1 / 0 ) 3 λ 5 i 2
-| 0 c 5 c 2 i 3 λ 0 ) 0 i 3 ) 0
-| 0 i 3 / 1 / 1 i 3 / 0 ) 0 | 0
-i 3 i 4 i 3 ) 3 i 2 i 3 i 3 i 3
-`.replace(/\s+/g, '')
-
-const source = [3, 0]
-
-const pieceRenderers = {
-  i: renderTerminus,
-  '|': renderStraight,
-  ')': renderBend,
-  c: renderCurve,
-  Ш: renderSha,
-  Y: renderTriskelion,
-  λ: renderLambda,
-  '/': renderLambdaFlipped,
-  Ψ: renderPsi,
-  X: renderChi,
-  K: renderK,
-}
-
-const renderConnector = (row, col, piece, orientation, source) => {
-  const f = pieceRenderers[piece]
-  if (f !== undefined) {
-    f(row, col, orientation, true, source)
+  for (let row = 0; row < GRID_HEIGHT; row++) {
+    for (let col = 0; col < GRID_WIDTH; col++) {
+      let piece
+      if (isCorner(row, col)) {
+        piece = cornerPieces.choose()
+      } else if (isEdge(row, col)) {
+        piece = edgePieces.choose()
+      } else {
+        piece = pieces.choose()
+      }
+      const orientation = Math.floor(Math.random() * 6)
+      board[row][col] = { piece, orientation }
+      //const [x, y] = hexIndexToCenterCoords(row, col)
+      //const source = row === source_row && col === source_col
+      //renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, false)
+    }
   }
-}
-
-const renderPuzzle = (board, [source_row, source_col]) => {
-  renderHexGrid(c, HEX_X0, HEX_Y0, R, r)
   for (let row = 0; row < GRID_HEIGHT; row++) {
     for (let col = 0; col < GRID_WIDTH; col++) {
       const [x, y] = hexIndexToCenterCoords(row, col)
-      const piece = board.substr((row * GRID_WIDTH + col) * 2, 1)
-      const orientation = board.substr((row * GRID_WIDTH + col) * 2 + 1, 1)
-      const source = row === source_row && col === source_col
-      renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, source)
+      const piece = board[row][col].piece
+      const orientation = board[row][col].orientation
+      const source = false //row === source_row && col === source_col
+      renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, true, source)
     }
   }
 }
 
-renderPuzzle(board, source)
+generatePuzzle()
