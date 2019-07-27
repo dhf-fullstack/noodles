@@ -504,10 +504,6 @@ const isEdge = (row, col) => {
   )
 }
 
-Array.prototype.choose = function() {
-  return this[Math.floor(Math.random() * this.length)]
-}
-
 /*
 const board = `
 i 5 i 5 ) 0 c 5 i 2 c 5 | 2 i 0
@@ -569,56 +565,22 @@ renderPuzzle(board, source)
 */
 
 const generatePuzzle = () => {
-  // choose a hex at random
-  // choose a piece at random
-  //   if corner, i, c, ), Ш
-  //   if edge,   i, c, ), Ш, |, \, /, K
-  //   else any   i, c, ), Ш, |, \, /, K, Y, X, Ψ
-  // does it fit?
-  //   try all orientations
-  //   if edge or corner, does it point off grid?
-  //   does it fail to connect to an existing contact point?
-  //   if cannot be made to fit, try another piece
-  //   if no pieces work, backtrack
-  // it fits:
-  //    for each of the empty hexes the piece connects:
-  //      recursively fill from that hex
-  //      if failure, backtrack
+  /*
+    make a graph of the puzzle board
+    find a random spanning tree by doing a random walk of the board
+    turns out the pieces are all the possible resulting connections between hexes!
+    (considering the curve connecting adjacent sides to go through the center even though
+    not rendered that way)
+  */
 
-  //const row = Math.floor(Math.random() * GRID_HEIGHT)
-  //const col = Math.floor(Math.random() * GRID_WIDTH)
-  const cornerPieces = ['i', 'c', ')', 'Ш']
-  const edgePieces = ['i', 'c', ')', 'Ш', '|', 'λ', '/', 'K']
-  const pieces = ['i', 'c', ')', 'Ш', '|', 'λ', '/', 'K', 'Y', 'X', 'Ψ']
-  const board = new Array(GRID_HEIGHT)
-  for (let i = 0; i < GRID_HEIGHT; i++) {
-    board[i] = new Array(GRID_WIDTH)
-  }
-  for (let row = 0; row < GRID_HEIGHT; row++) {
-    for (let col = 0; col < GRID_WIDTH; col++) {
-      let piece
-      if (isCorner(row, col)) {
-        piece = cornerPieces.choose()
-      } else if (isEdge(row, col)) {
-        piece = edgePieces.choose()
-      } else {
-        piece = pieces.choose()
-      }
-      const orientation = Math.floor(Math.random() * 6)
-      board[row][col] = { piece, orientation }
-      //const [x, y] = hexIndexToCenterCoords(row, col)
-      //const source = row === source_row && col === source_col
-      //renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, false)
-    }
-  }
-  for (let row = 0; row < GRID_HEIGHT; row++) {
-    for (let col = 0; col < GRID_WIDTH; col++) {
-      const [x, y] = hexIndexToCenterCoords(row, col)
-      const piece = board[row][col].piece
-      const orientation = board[row][col].orientation
-      const source = false //row === source_row && col === source_col
-      renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, true, source)
-    }
+  /* HARD CODE 8x8 ADJACENCY LIST */
+  // prettier-ignore
+  const board = {
+    '0':  [0, 1, 8], '1':  [], '2':  [], '3':  [], '4':  [], '5':  [], '6':  [], '7':  [],
+    '8':  [], '9':  [], '10': [], '11': [], '12': [], '13': [], '14': [], '15': [],
+    '16': [], '17': [], '18': [], '19': [], '4': [], '5': [], '6': [], '7': [],
+    '24': [], '25': [], '26': [], '27': [], '4': [], '5': [], '6': [], '7': [],
+
   }
 }
 
