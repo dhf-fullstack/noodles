@@ -33,22 +33,25 @@ const generateGraph = (W, H) => {
     G[n] = []
     if (n === 0) {
       // top-left corner
-      G[n] = [1, W, W + 1].filter(v => 0 <= v && v < H * W) // filter for edge cases W === 1 or H === 1
+      G[n] = (W >= 2) ?
+        [n + 1, n + W, n + W + 1] :
+        [1]
     } else if (n === (H - 1) * W) {
       // bottom-left corner
-      G[n] = [n - W, n + 1]
+      G[n] = [n - W, n + 1].filter(v => 0 <= v && v < H * W) // filter edge cases
     } else if (n === W - 1) {
       // top-right corner
       // prettier-ignore
-      G[n] = (n % 2) ?
-             [n - 1, n + W] :
-             [n - 1, n + W - 1, n + W]
+      G[n] = (((n % W) % 2) ?
+        [n - 1, n + W] :
+        [n - 1, n + W - 1, n + W])
+        .filter(v => 0 <= v && v < H * W) // filter edge cases
     } else if (n === H * W - 1) {
       // bottom-right corner
       // prettier-ignore
-      G[n] = (n % 2) ?
-             [n - W, n - W - 1, n - 1] :
-             [n - W, n - W - 1]
+      G[n] = ((n % W) % 2) ?
+        [n - W, n - W - 1, n - 1] :
+        [n - 1, n - W]
     } else if (n % W === 0) {
       // left edge
       // prettier-ignore
@@ -56,18 +59,30 @@ const generateGraph = (W, H) => {
     } else if (n % W === W - 1) {
       // right edge
       // prettier-ignore
-      G[n] = (n % 2) ?
-             [n - W, n - W - 1, n - 1, n + W] :
-             [n - 1, n + W - 1, n + W]
+      G[n] = ((n % W) % 2) ?
+        [n - W, n - W - 1, n - 1, n + W] :
+        [n - W, n + W - 1, n - 1, n + W]
+    } else if (n < W) {
+      // top row
+      // prettier-ignore
+      G[n] = ((n % W) % 2) ?
+        [n - 1, n + W, n + 1] :
+        [n - 1, n + W - 1, n + W, n + W + 1, n + 1]
+    } else if ((H - 1) * W <= n) {
+      // bottom row
+      // prettier-ignore
+      G[n] = ((n % W) % 2) ?
+        [n - 1, n - W - 1, n - W, n - W + 1, n + 1] :
+        [n - 1, n - W, n + 1]
     } else {
       // prettier-ignore
-      G[n] = ((n % 2) ?
-              [n - W, n - 1, n + W - 1, n + W, n + W + 1, n + 1] : 
-              [n - W, n - W - 1, n - 1, n + W, n + 1, n - W + 1])
-             .filter(v => 0 <= v && v < H * W)
+      G[n] = ((n % W) % 2) ?
+        [n - W, n - W - 1, n - 1, n + W, n + 1, n - W + 1] :
+        [n - W, n - 1, n + W - 1, n + W, n + W + 1, n + 1]
+      //.filter(v => 0 <= v && v < H * W)
     }
   }
-  console.dir(G)
+  //console.dir(G)
   return G
 }
 
@@ -79,7 +94,7 @@ const generateGraph = (W, H) => {
   not rendered that way)
 */
 
-const renderGraph = (G, H, W, X0, Y0, RX, RY) => {
+const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
   const nodeCoords = v => {
     const row = Math.floor(v / W)
     const col = v % W
@@ -105,15 +120,17 @@ const renderGraph = (G, H, W, X0, Y0, RX, RY) => {
     }
   }
 
+  console.dir(G)
   for (let v in G) {
     const [x, y] = nodeCoords(v)
-    for (let u of G[v]) {
+    console.log('moo', v, G[v])
+    G[v].forEach(u => {
       const [w, z] = nodeCoords(u)
       c.beginPath()
       c.moveTo(x, y)
       c.lineTo(w, z)
       c.stroke()
-    }
+    })
   }
 }
 
@@ -134,9 +151,9 @@ const generateSpanningTree = G => {
   T[k] = []
   count--
   while (count) {
-    debugger
+    //debugger
     const v = G[k].choose()
-    console.log(`${count}, ${k} ${G[k]} ${v}`)
+    //console.log(`${count}, ${k} ${G[k]} ${v}`)
     if (T[v] === undefined) {
       T[v] = [k]
       count--
@@ -146,10 +163,48 @@ const generateSpanningTree = G => {
   return T
 }
 
-const w = 3 // GRID_WIDTH
-const h = 3 // GRID_HEIGHT
+const w = 4 // GRID_WIDTH
+const h = 4 // GRID_HEIGHT
 const G = generateGraph(w, h)
 renderGraph(G, w, h, HEX_X0, HEX_Y0, RX, RY)
-//const T = generateSpanningTree(G)
-//console.log(T)
-//renderGraph(T, GRID_WIDTH, HEX_X0, HEX_Y0, RX, RY)
+const T = generateSpanningTree(G)
+console.dir(T)
+renderGraph(T, w, h, HEX_X0, HEX_Y0, RX, RY)
+
+/*
+0: []
+1: [0]
+2: [6]
+3: [2]
+4: [0]
+5: [0]
+6: [10]
+7: [2]
+8: [4]
+9: [8]
+10: [9]
+11: [15]
+12: [13]
+13: [10]
+14: [13]
+15: [14]
+*/
+
+/*
+0: [5]
+1: [5]
+2: [1]
+3: [7]
+4: [5]
+5: [6]
+6: [11]
+7: [6]
+8: [9]
+9: [5]
+10: []
+11: [15]
+12: [8]
+13: [8]
+14: [10]
+15: [14]
+*/
