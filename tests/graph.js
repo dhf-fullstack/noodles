@@ -98,7 +98,7 @@ const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
   const nodeCoords = v => {
     const row = Math.floor(v / W)
     const col = v % W
-    const y = Y0 + row * RY
+    const y = Y0 + row * RY + (col % 2 ? 0 : RY / 2)
     const x = X0 + col * RX
     return [x, y]
   }
@@ -108,20 +108,25 @@ const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
   c.stroke()
   c.fill()
 
-  c.fillStyle = 'GREY'
-  for (let row = 0; row < h; row++) {
+  //c.fillStyle = 'GREY'
+  /*for (let row = 0; row < h; row++) {
     for (let col = 0; col < w; col++) {
-      const y = HEX_Y0 + row * RY
+      const y = HEX_Y0 + row * RY + (col % 2 ? 0 : RY / 2)
       const x = HEX_X0 + col * RX
       const rr = 3
       c.beginPath()
       c.arc(x, y, rr, 0, 2 * Math.PI, true)
       c.fill()
     }
-  }
+  }*/
 
+  c.fillStyle = 'GREY'
   for (let v in G) {
     const [x, y] = nodeCoords(v)
+    const rr = 3
+    c.beginPath()
+    c.arc(x, y, rr, 0, 2 * Math.PI, true)
+    c.fill()
     G[v].forEach(u => {
       const [w, z] = nodeCoords(u)
       c.beginPath()
