@@ -33,7 +33,8 @@ const generateGraph = (W, H) => {
     G[n] = []
     if (n === 0) {
       // top-left corner
-      G[n] = (W >= 2) ?
+      // prettier-ignore
+      G[n] = W >= 2 ?
         [n + 1, n + W, n + W + 1] :
         [1]
     } else if (n === (H - 1) * W) {
@@ -82,7 +83,6 @@ const generateGraph = (W, H) => {
       //.filter(v => 0 <= v && v < H * W)
     }
   }
-  //console.dir(G)
   return G
 }
 
@@ -120,10 +120,8 @@ const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
     }
   }
 
-  console.dir(G)
   for (let v in G) {
     const [x, y] = nodeCoords(v)
-    console.log('moo', v, G[v])
     G[v].forEach(u => {
       const [w, z] = nodeCoords(u)
       c.beginPath()
@@ -143,10 +141,10 @@ const generateSpanningTree = G => {
   */
 
   let T = {}
-  for (let key in Object.keys(G)) {
+  for (let key in G) {
     T[key] = undefined
   }
-  let count = Object.keys(G).length
+  let count = Object.keys(T).length
   let k = Math.floor(Math.random() * count)
   T[k] = []
   count--
@@ -160,15 +158,21 @@ const generateSpanningTree = G => {
     }
     k = v
   }
+
   return T
 }
 
 const w = 4 // GRID_WIDTH
 const h = 4 // GRID_HEIGHT
+console.log('generate G')
 const G = generateGraph(w, h)
+console.dir(G)
+console.log('render G')
 renderGraph(G, w, h, HEX_X0, HEX_Y0, RX, RY)
+console.log('generate T')
 const T = generateSpanningTree(G)
 console.dir(T)
+console.log('render T')
 renderGraph(T, w, h, HEX_X0, HEX_Y0, RX, RY)
 
 /*
