@@ -22,14 +22,14 @@ const GRID_WIDTH = 8
 
 const R = 42 //35
 const r = 39 //33
-const RY = 2 * Math.floor(R * Math.cos(Math.PI / 6))
-const RX = /*3 * */ R + Math.floor(R * Math.sin(Math.PI / 6))
+const RY = Math.floor(R * Math.cos(Math.PI / 6))
+const RX = R + Math.floor(R * Math.sin(Math.PI / 6))
 // the grid seems to have a margin of about 3 hexes above and below
-const H = (3 + GRID_HEIGHT + 3) * RY
-const W = GRID_WIDTH * RX
+const H = (3 + GRID_HEIGHT + 3) * 1.5 * RY
+const W = (1 + GRID_WIDTH) * RX
 const lineWidth = 16
 
-const HEX_X0 = Math.floor(RX / 2)
+const HEX_X0 = Math.floor(RX)
 const HEX_Y0 = 3 * RY
 
 const cssHex = n => {
@@ -115,7 +115,7 @@ const hexIndexToCenterCoords = (row, col) => {
   // returns [x, y]
   const dx = R + Math.floor(R * Math.sin(Math.PI / 6))
   const dy = Math.floor(R * Math.cos(Math.PI / 6))
-  return [col * dx, row * 2 * dy + (col % 2 ? 0 : dy)]
+  return [col * dx, (row * 2 + (col % 2 ? 0 : 1)) * dy]
 }
 
 const renderHexGrid = (ctx, x0, y0, R, r) => {
@@ -563,6 +563,7 @@ const renderPuzzle = (board, [source_row, source_col]) => {
 
 renderPuzzle(board, source)
 */
-console.log(2 / Math.sqrt(3))
 const G = generateGraph(GRID_WIDTH, GRID_HEIGHT)
-renderGraph(G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX / 2.4, RY)
+//renderGraph(G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
+const T = generateSpanningTree(G)
+renderGraph(T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
