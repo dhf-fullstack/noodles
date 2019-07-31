@@ -68,26 +68,37 @@ const generateSpanningTree = G => {
     edge (u, v) traversed. Continue until all
     vertices visited. return the set of saved edges.
   */
-
+  let valid = false
   let T = {}
-  for (let key in G) {
-    T[key] = undefined
-  }
-  let count = Object.keys(T).length
-  let k = Math.floor(Math.random() * count)
-  T[k] = []
-  count--
-  while (count) {
-    //debugger
-    const v = G[k].choose()
-    //console.log(`${count}, ${k} ${G[k]} ${v}`)
-    if (T[v] === undefined) {
-      T[v] = [k]
-      count--
+  while (!valid) {
+    for (let key in G) {
+      T[key] = undefined
     }
-    k = v
+    let count = Object.keys(T).length
+    let k = Math.floor(Math.random() * count)
+    T[k] = []
+    count--
+    while (count) {
+      //debugger
+      const v = G[k].choose()
+      //console.log(`${count}, ${k} ${G[k]} ${v}`)
+      if (T[v] === undefined) {
+        T[v] = [k]
+        T[k].push(v)
+        count--
+      }
+      k = v
+    }
+    valid = true
+    for (let key in T) {
+      if (T[k].length > 4) {
+        console.log('poop!')
+        valid = false
+        T = {}
+        break
+      }
+    }
   }
-
   return T
 }
 
@@ -95,8 +106,8 @@ const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
   const nodeCoords = v => {
     const row = Math.floor(v / W)
     const col = v % W
-    const y = Y0 + row * RY + (col % 2 ? 0 : RY / 2)
-    const x = X0 + col * RX
+    const x = col * RX
+    const y = (row * 2 + (col % 2 ? 0 : 1)) * RY
     return [x, y]
   }
 
@@ -122,13 +133,13 @@ const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
     const [x, y] = nodeCoords(v)
     const rr = 3
     c.beginPath()
-    c.arc(x, y, rr, 0, 2 * Math.PI, true)
+    c.arc(x + X0, y + Y0, rr, 0, 2 * Math.PI, true)
     c.fill()
     G[v].forEach(u => {
       const [w, z] = nodeCoords(u)
       c.beginPath()
-      c.moveTo(x, y)
-      c.lineTo(w, z)
+      c.moveTo(x + X0, y + Y0)
+      c.lineTo(w + X0, z + Y0)
       c.stroke()
     })
   }
