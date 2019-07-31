@@ -23,10 +23,10 @@ const GRID_WIDTH = 8
 const R = 42 //35
 const r = 39 //33
 const RY = 2 * Math.floor(R * Math.cos(Math.PI / 6))
-const RX = 3 * R + Math.floor(R * Math.sin(Math.PI / 6))
+const RX = /*3 * */ R + Math.floor(R * Math.sin(Math.PI / 6))
 // the grid seems to have a margin of about 3 hexes above and below
 const H = (3 + GRID_HEIGHT + 3) * RY
-const W = 4 * RX
+const W = GRID_WIDTH * RX
 const lineWidth = 16
 
 const HEX_X0 = Math.floor(RX / 2)
@@ -563,25 +563,6 @@ const renderPuzzle = (board, [source_row, source_col]) => {
 
 renderPuzzle(board, source)
 */
-
-const generatePuzzle = () => {
-  /*
-    make a graph of the puzzle board
-    find a random spanning tree by doing a random walk of the board
-    turns out the pieces are all the possible resulting connections between hexes!
-    (considering the curve connecting adjacent sides to go through the center even though
-    not rendered that way)
-  */
-
-  /* HARD CODE 8x8 ADJACENCY LIST */
-  // prettier-ignore
-  const board = {
-    '0':  [0, 1, 8], '1':  [], '2':  [], '3':  [], '4':  [], '5':  [], '6':  [], '7':  [],
-    '8':  [], '9':  [], '10': [], '11': [], '12': [], '13': [], '14': [], '15': [],
-    '16': [], '17': [], '18': [], '19': [], '4': [], '5': [], '6': [], '7': [],
-    '24': [], '25': [], '26': [], '27': [], '4': [], '5': [], '6': [], '7': [],
-
-  }
-}
-
-generatePuzzle()
+console.log(2 / Math.sqrt(3))
+const G = generateGraph(GRID_WIDTH, GRID_HEIGHT)
+renderGraph(G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX / 2.4, RY)
