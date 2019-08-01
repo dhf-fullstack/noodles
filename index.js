@@ -1,13 +1,9 @@
 /*global document, window*/
 const canvas = document.getElementById('canvas')
 const c = canvas.getContext('2d')
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
 
 const mask = document.createElement('canvas')
 const m = mask.getContext('2d')
-mask.width = window.innerWidth
-mask.height = window.innerHeight
 
 const COLORS = {
   BACKGROUND: '#FEFEF3',
@@ -28,6 +24,12 @@ const RX = R + Math.floor(R * Math.sin(Math.PI / 6))
 const H = (3 + GRID_HEIGHT + 3) * 1.5 * RY
 const W = (1 + GRID_WIDTH) * RX
 const lineWidth = 16
+
+//console.log(`(${window.innerHeight}, ${window.innerWidth}), (${H},${W})`)
+canvas.height = H
+canvas.width = W
+mask.height = H
+mask.width = W
 
 const HEX_X0 = Math.floor(RX)
 const HEX_Y0 = 3 * RY
@@ -103,12 +105,12 @@ const unsubscribeGridClick = subscribeToCanvasClick(ev =>
 )
 
 const gridOnClick = (x, y) => {
-  const coords = pixelCoordsToHexIndex(x, y)
+  /*  const coords = pixelCoordsToHexIndex(x, y)
   if (coords != undefined) {
     const [row, col] = coords
     const [x, y] = hexIndexToCenterCoords(row, col)
     renderHex(c, HEX_X0 + x, HEX_Y0 + y, r, '#ff0000')
-  }
+  }*/
 }
 
 const hexIndexToCenterCoords = (row, col) => {
@@ -141,17 +143,19 @@ const renderMaskGrid = (ctx, x0, y0, R, r) => {
   }
 }
 
-c.fillStyle = COLORS.BACKGROUND
-c.rect(1, 1, W, H)
-c.stroke()
-c.fill()
-renderHexGrid(c, HEX_X0, HEX_Y0, R, r)
+const clearGrid = () => {
+  c.fillStyle = COLORS.BACKGROUND
+  c.rect(1, 1, W, H)
+  c.stroke()
+  c.fill()
+  renderHexGrid(c, HEX_X0, HEX_Y0, R, r)
 
-m.fillStyle = '#FFFFFF'
-m.rect(1, 1, W, H)
-m.stroke()
-m.fill()
-renderMaskGrid(m, HEX_X0, HEX_Y0, R, r)
+  m.fillStyle = '#FFFFFF'
+  m.rect(1, 1, W, H)
+  m.stroke()
+  m.fill()
+  renderMaskGrid(m, HEX_X0, HEX_Y0, R, r)
+}
 
 /* debugging occasional unexpected values on click
 c.fillStyle = '#FFFFFF'
@@ -563,7 +567,35 @@ const renderPuzzle = (board, [source_row, source_col]) => {
 
 renderPuzzle(board, source)
 */
+
+const testGraphEdges = G => {
+  const ok = true
+  for (let v in G) {
+    v = Number(v)
+    //G[v].every(u => G[u].indexOf(v) !== -1)
+    G[v].forEach(u => {
+      if (G[u].indexOf(+v) === -1) {
+        console.log(`${u} does not point back to ${v}`)
+        ok = false
+      }
+    })
+  }
+  return ok
+}
+
+clearGrid()
 const G = generateGraph(GRID_WIDTH, GRID_HEIGHT)
-//renderGraph(G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
-const T = generateSpanningTree(G)
-renderGraph(T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
+//console.log('G')
+//console.dir(G)
+renderGraph(G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
+//console.log('TEST GRAPH EDGES ', testGraphEdges(G))
+
+const generateBtn = document.getElementById('generateBtn')
+generateBtn.addEventListener('click', ev => {
+  clearGrid()
+  const T = generateSpanningTree(G)
+  console.log('T')
+  console.dir(T)
+  renderGraph(T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
+  //console.log('TEST TREE EDGES ', testGraphEdges(T))
+})

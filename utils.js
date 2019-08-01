@@ -68,9 +68,11 @@ const generateSpanningTree = G => {
     edge (u, v) traversed. Continue until all
     vertices visited. return the set of saved edges.
   */
+  let attempts = 0
   let valid = false
   let T = {}
   while (!valid) {
+    attempts++
     for (let key in G) {
       T[key] = undefined
     }
@@ -90,15 +92,16 @@ const generateSpanningTree = G => {
       k = v
     }
     valid = true
-    for (let key in T) {
+    for (let k in T) {
       if (T[k].length > 4) {
-        console.log('poop!')
+        console.log(`poop k ${k} T[k] ${T[k]} len T[${k}] ${T[k].length}`)
         valid = false
         T = {}
         break
       }
     }
   }
+  console.log(`generateSpanningTree attempts ${attempts}`)
   return T
 }
 
@@ -135,6 +138,7 @@ const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
     c.beginPath()
     c.arc(x + X0, y + Y0, rr, 0, 2 * Math.PI, true)
     c.fill()
+    c.fillText(v, x + X0 + 10, y + Y0 + 10)
     G[v].forEach(u => {
       const [w, z] = nodeCoords(u)
       c.beginPath()
