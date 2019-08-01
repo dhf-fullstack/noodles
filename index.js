@@ -16,8 +16,8 @@ const COLORS = {
 const GRID_HEIGHT = 8 // for tests 11
 const GRID_WIDTH = 8
 
-const R = 42 //35
-const r = 39 //33
+const R = 35 // 42 //35
+const r = 33 // 39 //33
 const RY = Math.floor(R * Math.cos(Math.PI / 6))
 const RX = R + Math.floor(R * Math.sin(Math.PI / 6))
 // the grid seems to have a margin of about 3 hexes above and below
@@ -62,6 +62,14 @@ const renderHex = (ctx, x, y, r, color) => {
   //ctx.stroke()
 }
 
+const nodeCoords = v => {
+  const row = Math.floor(v / GRID_WIDTH)
+  const col = v % GRID_WIDTH
+  const x = col * RX
+  const y = (row * 2 + (col % 2 ? 0 : 1)) * RY
+  return [x, y]
+}
+
 const pixelCoordsToHexIndex = (x, y) => {
   // returns [row, col]
   const c = m.getImageData(x, y, 1, 1).data
@@ -98,20 +106,21 @@ canvas.onclick = ev => {
 }
 
 // testing
-// subscribeToCanvasClick(ev => console.log(pixelCoordsToHexIndex(ev.x, ev.y)))
+/* subscribeToCanvasClick(ev => console.log(pixelCoordsToHexIndex(ev.x, ev.y)))
 
 const unsubscribeGridClick = subscribeToCanvasClick(ev =>
   gridOnClick(ev.x, ev.y)
 )
 
 const gridOnClick = (x, y) => {
-  /*  const coords = pixelCoordsToHexIndex(x, y)
+  const coords = pixelCoordsToHexIndex(x, y)
   if (coords != undefined) {
     const [row, col] = coords
     const [x, y] = hexIndexToCenterCoords(row, col)
     renderHex(c, HEX_X0 + x, HEX_Y0 + y, r, '#ff0000')
-  }*/
+  }
 }
+*/
 
 const hexIndexToCenterCoords = (row, col) => {
   // returns [x, y]
@@ -145,15 +154,15 @@ const renderMaskGrid = (ctx, x0, y0, R, r) => {
 
 const clearGrid = () => {
   c.fillStyle = COLORS.BACKGROUND
-  c.rect(1, 1, W, H)
-  c.stroke()
-  c.fill()
+  c.fillRect(0, 0, W, H)
+  //c.rect(0, 0, W, H)
+  //c.stroke()
   renderHexGrid(c, HEX_X0, HEX_Y0, R, r)
 
   m.fillStyle = '#FFFFFF'
-  m.rect(1, 1, W, H)
-  m.stroke()
-  m.fill()
+  m.fillRect(0, 0, W, H)
+  //m.rect(0, 0, W, H)
+  //m.stroke()
   renderMaskGrid(m, HEX_X0, HEX_Y0, R, r)
 }
 
@@ -271,7 +280,7 @@ const renderCurve = (x, y, orientation, activated, source = false) => {
 
 const renderSha = (x, y, orientation, activated, source = false) => {
   // the \|/ piece.
-  // the center branch is at orientation
+  // with the legs pointing down, the rightmost leg is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
   c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
@@ -280,13 +289,12 @@ const renderSha = (x, y, orientation, activated, source = false) => {
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
   c.beginPath()
-  c.rotate(Math.PI / 3)
   c.moveTo(0, cos)
   c.lineTo(0, 0)
-  c.rotate(-Math.PI / 3)
+  c.rotate(Math.PI / 3)
   c.lineTo(0, cos)
   c.moveTo(0, 0)
-  c.rotate(-(Math.PI / 3))
+  c.rotate(Math.PI / 3)
   c.lineTo(0, cos)
   c.stroke()
   c.restore()
@@ -350,8 +358,8 @@ const renderLambdaFlipped = (x, y, orientation, activated, source = false) => {
   c.beginPath()
   c.moveTo(0, cos)
   c.lineTo(0, -cos)
+  c.rotate((Math.PI / 3) * 2)
   c.moveTo(0, 0)
-  c.rotate(-Math.PI / 3)
   c.lineTo(0, cos)
   c.stroke()
   c.restore()
@@ -362,7 +370,7 @@ const renderLambdaFlipped = (x, y, orientation, activated, source = false) => {
 
 const renderPsi = (x, y, orientation, activated, source = false) => {
   // the -<- piece
-  // the middle arm of the trio is at orientation
+  // with the arms pointing down, the rightmost arm of the trio is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
   c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
@@ -370,16 +378,16 @@ const renderPsi = (x, y, orientation, activated, source = false) => {
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
   c.beginPath()
+  c.moveTo(0, 0)
+  c.lineTo(0, cos)
   c.rotate(Math.PI / 3)
-  c.moveTo(0, cos)
-  c.lineTo(0, 0)
-  c.rotate(-Math.PI / 3)
-  c.lineTo(0, cos)
   c.moveTo(0, 0)
-  c.rotate(-(Math.PI / 3))
   c.lineTo(0, cos)
+  c.rotate(Math.PI / 3)
   c.moveTo(0, 0)
-  c.rotate((Math.PI / 3) * -2)
+  c.lineTo(0, cos)
+  c.rotate((Math.PI / 3) * 2)
+  c.moveTo(0, 0)
   c.lineTo(0, cos)
   c.stroke()
   c.restore()
@@ -493,36 +501,6 @@ let f3 = subscribeToCanvasClick(ev => {
 // successive clicks will log f1,f3 (f2 having been removed, and calling f2() multiple times is a no-op)
 */
 
-const isCorner = (row, col) => {
-  return (
-    (row === 0 && col === 0) ||
-    (row === GRID_HEIGHT - 1 && col === 0) ||
-    (row === 0 && col === GRID_WIDTH - 1) ||
-    (row === GRID_HEIGHT - 1 && col === GRID_WIDTH - 1)
-  )
-}
-
-const isEdge = (row, col) => {
-  return (
-    row === 0 || row === GRID_HEIGHT - 1 || col === 0 || col === GRID_WIDTH - 1
-  )
-}
-
-/*
-const board = `
-i 5 i 5 ) 0 c 5 i 2 c 5 | 2 i 0
-i 0 | 2 K 2 ) 1 i 5 | 0 i 0 c 2
-) 3 i 0 ) 5 ) 0 | 1 Ψ 2 c 2 i 0
-i 5 Ш 3 ) 5 K 2 Ψ 1 Ш 0 / 5 ) 1
-) 4 λ 1 ) 4 Ψ 1 / 0 ) 3 λ 5 i 2
-| 0 c 5 c 2 i 3 λ 0 ) 0 i 3 ) 0
-| 0 i 3 / 1 / 1 i 3 / 0 ) 0 | 0
-i 3 i 4 i 3 ) 3 i 2 i 3 i 3 i 3
-`.replace(/\s+/g, '')
-
-const source = [3, 0]
-*/
-
 const pieceRenderers = {
   i: renderTerminus,
   '|': renderStraight,
@@ -587,15 +565,46 @@ clearGrid()
 const G = generateGraph(GRID_WIDTH, GRID_HEIGHT)
 //console.log('G')
 //console.dir(G)
-renderGraph(G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
+//renderGraph(c, G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
 //console.log('TEST GRAPH EDGES ', testGraphEdges(G))
 
+let T // current tree
+let B // current 'board': the connectors at each hex
+
 const generateBtn = document.getElementById('generateBtn')
+let unsubscribeGridClick
 generateBtn.addEventListener('click', ev => {
+  unsubscribeGridClick && unsubscribeGridClick()
   clearGrid()
-  const T = generateSpanningTree(G)
-  console.log('T')
-  console.dir(T)
-  renderGraph(T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
+  T = generateSpanningTree(G)
+  //console.log('T')
+  //console.dir(T)
+  //renderGraph(c, T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
   //console.log('TEST TREE EDGES ', testGraphEdges(T))
+  B = boardFromTree(T, GRID_HEIGHT, GRID_WIDTH)
+  B = scrambleBoard(B)
+  //console.log('B')
+  //console.dir(B)
+  for (let b in B) {
+    const [piece, orientation] = B[b]
+    //console.log(`${b} '${piece}' ${orientation}}`)
+    let [x, y] = nodeCoords(b)
+    renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, false)
+    //source = false
+  }
+
+  unsubscribeGridClick = subscribeToCanvasClick(ev => gridOnClick(ev.x, ev.y))
+
+  const gridOnClick = (x, y) => {
+    const coords = pixelCoordsToHexIndex(x, y)
+    if (coords != undefined) {
+      const [row, col] = coords
+      const v = row * GRID_WIDTH + col
+      B[v] = [B[v][0], (B[v][1] + 1) % 6]
+      let [x, y] = nodeCoords(v)
+      //const [x, y] = hexIndexToCenterCoords(row, col)
+      renderHex(c, x + HEX_X0, y + HEX_Y0, r)
+      renderConnector(x + HEX_X0, y + HEX_Y0, B[v][0], B[v][1], false)
+    }
+  }
 })

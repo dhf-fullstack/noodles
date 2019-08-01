@@ -1,5 +1,9 @@
+const randomInt = n => {
+  return Math.floor(Math.random() * n)
+}
+
 Array.prototype.choose = function() {
-  return this[Math.floor(Math.random() * this.length)]
+  return this[randomInt(this.length)]
 }
 
 const generateGraph = (W, H) => {
@@ -68,11 +72,11 @@ const generateSpanningTree = G => {
     edge (u, v) traversed. Continue until all
     vertices visited. return the set of saved edges.
   */
-  let attempts = 0
+  //let attempts = 0
   let valid = false
   let T = {}
   while (!valid) {
-    attempts++
+    //attempts++
     for (let key in G) {
       T[key] = undefined
     }
@@ -94,18 +98,18 @@ const generateSpanningTree = G => {
     valid = true
     for (let k in T) {
       if (T[k].length > 4) {
-        console.log(`poop k ${k} T[k] ${T[k]} len T[${k}] ${T[k].length}`)
+        //console.log(`invalid tree k ${k} T[k] ${T[k]} len T[${k}] ${T[k].length}`)
         valid = false
         T = {}
         break
       }
     }
   }
-  console.log(`generateSpanningTree attempts ${attempts}`)
+  //console.log(`generateSpanningTree attempts ${attempts}`)
   return T
 }
 
-const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
+const renderGraph = (c, G, W, H, X0, Y0, RX, RY) => {
   const nodeCoords = v => {
     const row = Math.floor(v / W)
     const col = v % W
@@ -147,4 +151,61 @@ const renderGraph = (G, W, H, X0, Y0, RX, RY) => {
       c.stroke()
     })
   }
+}
+
+const patterns = new Array(64)
+
+// prettier-ignore
+const pieces = {
+  'i': 1,  'c': 3,  ')': 5,  '|': 9,
+  'Ш': 7,  'λ': 11, '/': 13, 'Y': 21,
+  'K': 15, 'Ψ': 23, 'X': 27,
+}
+
+for (let p in pieces) {
+  let code = pieces[p]
+  for (let orientation = 0; orientation < 6; orientation++) {
+    patterns[code] = [p, orientation]
+    code = (code * 2) % 63
+  }
+}
+
+//console.log('patterns')
+//console.dir(patterns)
+
+const boardFromTree = (T, H, W) => {
+  const side = (v, i) => {
+    let a = T[v].indexOf(i) >= 0 ? 1 : 0
+    //console.log(`side ${v} ${i} = ${a}`)
+    return a
+  }
+  let B = {}
+  for (let v in T) {
+    v = Number(v)
+    // prettier-ignore
+    let P = ((v % W) % 2) ?
+              ((((side(v, v + 1) * 2 +
+                    side(v, v - W + 1)) * 2 +
+                      side(v, v - W)) * 2 +
+                        side(v, v - W - 1)) * 2 +
+                          side(v, v - 1)) * 2 +
+                            side(v, v + W) :
+              ((((side(v, v + W + 1) * 2 +
+                    side(v, v + 1)) * 2 +
+                      side(v, v - W)) * 2 +
+                        side(v, v - 1)) * 2 +
+                          side(v, v + W - 1)) * 2 +
+                            side(v, v + W)
+    //console.log(`v ${v} P ${P}, pat ${patterns[P]}`)
+    B[v] = patterns[P]
+  }
+  return B
+}
+
+const scrambleBoard = B => {
+  let N = {}
+  for (let v in B) {
+    N[v] = [B[v][0], randomInt(6)] // random orientation
+  }
+  return N
 }
