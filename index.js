@@ -205,8 +205,8 @@ const renderTerminus = (x, y, orientation, activated, source = false) => {
   const h = Math.floor(r * Math.cos(Math.PI / 6))
   c.beginPath()
   c.arc(x, y, rr, 0, 2 * Math.PI, true)
-  c.fillStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.fillStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.fill()
   c.save()
   c.translate(x, y)
@@ -224,7 +224,7 @@ const renderBend = (x, y, orientation, activated, source) => {
   // the "bottom" of the connector is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineJoin = 'round'
   c.lineWidth = lineWidth
   c.translate(x, y)
@@ -246,7 +246,7 @@ const renderStraight = (x, y, orientation, activated, source = false) => {
   // the "bottom" of the connector is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineWidth = lineWidth
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
@@ -265,7 +265,7 @@ const renderCurve = (x, y, orientation, activated, source = false) => {
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   const sin = Math.floor(r * Math.sin(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineWidth = lineWidth
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
@@ -283,7 +283,7 @@ const renderSha = (x, y, orientation, activated, source = false) => {
   // with the legs pointing down, the rightmost leg is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineJoin = 'round'
   c.lineWidth = lineWidth
   c.translate(x, y)
@@ -308,7 +308,7 @@ const renderTriskelion = (x, y, orientation, activated, source = false) => {
   // an arm is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineWidth = lineWidth
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
@@ -331,7 +331,7 @@ const renderTriskelion = (x, y, orientation, activated, source = false) => {
 const renderLambda = (x, y, orientation, activated, source = false) => {
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineWidth = lineWidth
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
@@ -351,7 +351,7 @@ const renderLambda = (x, y, orientation, activated, source = false) => {
 const renderLambdaFlipped = (x, y, orientation, activated, source = false) => {
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineWidth = lineWidth
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
@@ -373,7 +373,7 @@ const renderPsi = (x, y, orientation, activated, source = false) => {
   // with the arms pointing down, the rightmost arm of the trio is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineWidth = lineWidth
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
@@ -401,7 +401,7 @@ const renderChi = (x, y, orientation, activated, source = false) => {
   // the right branch of the "bottom" is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineWidth = lineWidth
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
@@ -423,7 +423,7 @@ const renderK = (x, y, orientation, activated, source = false) => {
   // with the arms pointing left, the bottom branch is at orientation
   const cos = Math.floor(r * Math.cos(Math.PI / 6))
   c.save()
-  c.strokeStyle = activated ? COLORS.ACTIVATED : COLORS.CONNECTORS
+  c.strokeStyle = activated || source ? COLORS.ACTIVATED : COLORS.CONNECTORS
   c.lineWidth = lineWidth
   c.translate(x, y)
   c.rotate((Math.PI / 3) * orientation)
@@ -469,7 +469,7 @@ const testRenderConnectors = (row, f) => {
   let x, y
   for (let col = 0; col < 6; col++) {
     [x, y] = hexIndexToCenterCoords(row, col)
-    f(x + HEX_X0, y + HEX_Y0, col, col === 2 || col === 4, true)
+    f(x + HEX_X0, y + HEX_Y0, col, col === 2 || col === 4, true) // activated, as test
   }
 }
 
@@ -515,17 +515,10 @@ const pieceRenderers = {
   K: renderK,
 }
 
-const renderConnector = (
-  row,
-  col,
-  piece,
-  orientation,
-  activated,
-  source = false
-) => {
+const renderConnector = (row, col, piece, orientation, source = false) => {
   const f = pieceRenderers[piece]
   if (f !== undefined) {
-    f(row, col, orientation, activated, source)
+    f(row, col, orientation, false, source)
   }
 }
 
@@ -538,7 +531,7 @@ const renderPuzzle = (board, [source_row, source_col]) => {
       const piece = board.substr((row * GRID_WIDTH + col) * 2, 1)
       const orientation = board.substr((row * GRID_WIDTH + col) * 2 + 1, 1)
       const source = row === source_row && col === source_col
-      renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, true, source)
+      renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, true, source) // activated, for testing
     }
   }
 }
@@ -570,6 +563,7 @@ const G = generateGraph(GRID_WIDTH, GRID_HEIGHT)
 
 let T // current tree
 let B // current 'board': the connectors at each hex
+let S
 
 const generateBtn = document.getElementById('generateBtn')
 let unsubscribeGridClick
@@ -581,16 +575,15 @@ generateBtn.addEventListener('click', ev => {
   //console.dir(T)
   //renderGraph(c, T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
   //console.log('TEST TREE EDGES ', testGraphEdges(T))
-  B = boardFromTree(T, GRID_HEIGHT, GRID_WIDTH)
+  let [B, S] = boardFromTree(T, GRID_HEIGHT, GRID_WIDTH)
   B = scrambleBoard(B)
-  //console.log('B')
+  //console.log('B', S)
   //console.dir(B)
   for (let b in B) {
+    b = Number(b)
     const [piece, orientation] = B[b]
-    //console.log(`${b} '${piece}' ${orientation}}`)
     let [x, y] = nodeCoords(b)
-    renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, false)
-    //source = false
+    renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, b === S)
   }
 
   unsubscribeGridClick = subscribeToCanvasClick(ev => gridOnClick(ev.x, ev.y))
@@ -604,7 +597,7 @@ generateBtn.addEventListener('click', ev => {
       let [x, y] = nodeCoords(v)
       //const [x, y] = hexIndexToCenterCoords(row, col)
       renderHex(c, x + HEX_X0, y + HEX_Y0, r)
-      renderConnector(x + HEX_X0, y + HEX_Y0, B[v][0], B[v][1], false)
+      renderConnector(x + HEX_X0, y + HEX_Y0, B[v][0], B[v][1], v === S)
     }
   }
 })

@@ -199,7 +199,8 @@ const boardFromTree = (T, H, W) => {
     //console.log(`v ${v} P ${P}, pat ${patterns[P]}`)
     B[v] = patterns[P]
   }
-  return B
+  const source = Object.keys(B).choose()
+  return [B, Number(source)]
 }
 
 const scrambleBoard = B => {
