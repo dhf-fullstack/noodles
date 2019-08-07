@@ -1,4 +1,4 @@
-/*global document, window*/
+/* global document, generateGraph, generateSpanningTree, Board,  */
 const canvas = document.getElementById('canvas')
 const c = canvas.getContext('2d')
 
@@ -531,7 +531,7 @@ const renderPuzzle = (board, [source_row, source_col]) => {
       const piece = board.substr((row * GRID_WIDTH + col) * 2, 1)
       const orientation = board.substr((row * GRID_WIDTH + col) * 2 + 1, 1)
       const source = row === source_row && col === source_col
-      renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, true, source) // activated, for testing
+      renderConnector(B, x + HEX_X0, y + HEX_Y0, piece, orientation, true, source) // activated, for testing
     }
   }
 }
@@ -539,6 +539,7 @@ const renderPuzzle = (board, [source_row, source_col]) => {
 renderPuzzle(board, source)
 */
 
+/* for TESTING & DEBUGGING
 const testGraphEdges = G => {
   const ok = true
   for (let v in G) {
@@ -553,6 +554,7 @@ const testGraphEdges = G => {
   }
   return ok
 }
+*/
 
 clearGrid()
 const G = generateGraph(GRID_WIDTH, GRID_HEIGHT)
@@ -561,13 +563,13 @@ const G = generateGraph(GRID_WIDTH, GRID_HEIGHT)
 //renderGraph(c, G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
 //console.log('TEST GRAPH EDGES ', testGraphEdges(G))
 
-let T // current tree
-let B // current 'board': the connectors at each hex
-let S
+let T // the solution tree
+let B = new Board() // current 'board': the connectors at each hex
 
 const generateBtn = document.getElementById('generateBtn')
 let unsubscribeGridClick
-generateBtn.addEventListener('click', ev => {
+// eslint-disable-next-line no-unused-vars
+generateBtn.addEventListener('click', _ev => {
   unsubscribeGridClick && unsubscribeGridClick()
   clearGrid()
   T = generateSpanningTree(G)
@@ -575,15 +577,14 @@ generateBtn.addEventListener('click', ev => {
   //console.dir(T)
   //renderGraph(c, T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
   //console.log('TEST TREE EDGES ', testGraphEdges(T))
-  let [B, S] = boardFromTree(T, GRID_HEIGHT, GRID_WIDTH)
-  B = scrambleBoard(B)
-  //console.log('B', S)
-  //console.dir(B)
-  for (let b in B) {
+
+  B.fromTree(T, GRID_HEIGHT, GRID_WIDTH)
+  B.scramble()
+  for (let b in B.B) {
     b = Number(b)
-    const [piece, orientation] = B[b]
+    const [piece, orientation] = B.B[b]
     let [x, y] = nodeCoords(b)
-    renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, b === S)
+    renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, b === B.S)
   }
 
   unsubscribeGridClick = subscribeToCanvasClick(ev => gridOnClick(ev.x, ev.y))
@@ -593,11 +594,13 @@ generateBtn.addEventListener('click', ev => {
     if (coords != undefined) {
       const [row, col] = coords
       const v = row * GRID_WIDTH + col
-      B[v] = [B[v][0], (B[v][1] + 1) % 6]
+      B.B[v][1] = (B.B[v][1] + 1) % 6
+      // who am I connected to now?
+      console.log(v, B.B[v])
       let [x, y] = nodeCoords(v)
       //const [x, y] = hexIndexToCenterCoords(row, col)
       renderHex(c, x + HEX_X0, y + HEX_Y0, r)
-      renderConnector(x + HEX_X0, y + HEX_Y0, B[v][0], B[v][1], v === S)
+      renderConnector(x + HEX_X0, y + HEX_Y0, B.B[v][0], B.B[v][1], v === B.S)
     }
   }
 })

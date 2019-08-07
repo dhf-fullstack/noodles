@@ -1,3 +1,7 @@
+/* exported generateGraph, generateSpanningTree */
+/* exported renderGraph  */
+/* exported makeBoard */
+
 const randomInt = n => {
   return Math.floor(Math.random() * n)
 }
@@ -109,77 +113,34 @@ const generateSpanningTree = G => {
   return T
 }
 
-const renderGraph = (c, G, W, H, X0, Y0, RX, RY) => {
-  const nodeCoords = v => {
-    const row = Math.floor(v / W)
-    const col = v % W
-    const x = col * RX
-    const y = (row * 2 + (col % 2 ? 0 : 1)) * RY
-    return [x, y]
+function Board() {
+  this.patterns = new Array(64)
+  // prettier-ignore
+  this.pieces = {
+    'i': 1,  'c': 3,  ')': 5,  '|': 9,
+    'Ш': 7,  'λ': 11, '/': 13, 'Y': 21,
+    'K': 15, 'Ψ': 23, 'X': 27,
   }
+  this.B = {}
+  this.S = -1
 
-  /*c.fillStyle = COLORS.BACKGROUND
-  c.rect(1, 1, W * RX, (3 + H + 3) * RY)
-  c.stroke()
-  c.fill()*/
-
-  //c.fillStyle = 'GREY'
-  /*for (let row = 0; row < h; row++) {
-    for (let col = 0; col < w; col++) {
-      const y = HEX_Y0 + row * RY + (col % 2 ? 0 : RY / 2)
-      const x = HEX_X0 + col * RX
-      const rr = 3
-      c.beginPath()
-      c.arc(x, y, rr, 0, 2 * Math.PI, true)
-      c.fill()
+  for (let p in this.pieces) {
+    let code = this.pieces[p]
+    for (let orientation = 0; orientation < 6; orientation++) {
+      this.patterns[code] = [p, orientation]
+      code = (code * 2) % 63
     }
-  }*/
-
-  c.fillStyle = 'GREY'
-  for (let v in G) {
-    const [x, y] = nodeCoords(v)
-    const rr = 3
-    c.beginPath()
-    c.arc(x + X0, y + Y0, rr, 0, 2 * Math.PI, true)
-    c.fill()
-    c.fillText(v, x + X0 + 10, y + Y0 + 10)
-    G[v].forEach(u => {
-      const [w, z] = nodeCoords(u)
-      c.beginPath()
-      c.moveTo(x + X0, y + Y0)
-      c.lineTo(w + X0, z + Y0)
-      c.stroke()
-    })
   }
 }
 
-const patterns = new Array(64)
-
-// prettier-ignore
-const pieces = {
-  'i': 1,  'c': 3,  ')': 5,  '|': 9,
-  'Ш': 7,  'λ': 11, '/': 13, 'Y': 21,
-  'K': 15, 'Ψ': 23, 'X': 27,
-}
-
-for (let p in pieces) {
-  let code = pieces[p]
-  for (let orientation = 0; orientation < 6; orientation++) {
-    patterns[code] = [p, orientation]
-    code = (code * 2) % 63
-  }
-}
-
-//console.log('patterns')
-//console.dir(patterns)
-
-const boardFromTree = (T, H, W) => {
+Board.prototype.fromTree = function(T, H, W) {
   const side = (v, i) => {
     let a = T[v].indexOf(i) >= 0 ? 1 : 0
     //console.log(`side ${v} ${i} = ${a}`)
     return a
   }
-  let B = {}
+
+  this.B = {}
   for (let v in T) {
     v = Number(v)
     // prettier-ignore
@@ -197,16 +158,95 @@ const boardFromTree = (T, H, W) => {
                           side(v, v + W - 1)) * 2 +
                             side(v, v + W)
     //console.log(`v ${v} P ${P}, pat ${patterns[P]}`)
-    B[v] = patterns[P]
+    this.B[v] = this.patterns[P]
   }
-  const source = Object.keys(B).choose()
-  return [B, Number(source)]
+  this.S = Object.keys(this.B).choose()
 }
 
-const scrambleBoard = B => {
-  let N = {}
-  for (let v in B) {
-    N[v] = [B[v][0], randomInt(6)] // random orientation
+Board.prototype.scramble = function() {
+  for (let v in this.B) {
+    this.B[v][1] = randomInt(6) // random orientation
   }
-  return N
+}
+
+/*
+const graphFromBoard = (B, H, W) => {
+    const side = (v, i) => {
+    let a = T[v].indexOf(i) >= 0 ? 1 : 0
+    //console.log(`side ${v} ${i} = ${a}`)
+    return a
+  }
+  let G = {}
+  for (let v in B) {
+    const [piece, orientation] = B[v]
+    console.log(v, piece, orientation)
+    let P = patterns.findIndex(p => p[0] === piece && p[1] === orientation)
+    if (P === -1) {
+      console.log(
+        'graphFromBoard UNEXPECTED missing pattern for',
+        piece,
+        orientation
+      )
+    } else {
+      if (G[v] === undefined) {
+        G[v] = new Array()
+        G[v].push()
+      }
+    }
+    /----
+    v = Number(v)
+    // prettier-ignore
+    let P = ((v % W) % 2) ?
+              ((((side(v, v + 1) * 2 +
+                    side(v, v - W + 1)) * 2 +
+                      side(v, v - W)) * 2 +
+                        side(v, v - W - 1)) * 2 +
+                          side(v, v - 1)) * 2 +
+                            side(v, v + W) :
+              ((((side(v, v + W + 1) * 2 +
+                    side(v, v + 1)) * 2 +
+                      side(v, v - W)) * 2 +
+                        side(v, v - 1)) * 2 +
+                          side(v, v + W - 1)) * 2 +
+                            side(v, v + W)
+    //console.log(`v ${v} P ${P}, pat ${patterns[P]}`)
+    B[v] = patterns[P]
+    ---/
+  }
+  //const source = Object.keys(B).choose()
+  return G
+}
+*/
+
+/* FOR TESTING */
+
+/* overlays the graph on the hex grid,
+   vertices, numbered, shown at th hex centers, and
+   edges connecting the vertices */
+
+const renderGraph = (c, G, W, H, X0, Y0, RX, RY) => {
+  const nodeCoords = v => {
+    const row = Math.floor(v / W)
+    const col = v % W
+    const x = col * RX
+    const y = (row * 2 + (col % 2 ? 0 : 1)) * RY
+    return [x, y]
+  }
+
+  c.fillStyle = 'GREY'
+  for (let v in G) {
+    const [x, y] = nodeCoords(v)
+    const rr = 3
+    c.beginPath()
+    c.arc(x + X0, y + Y0, rr, 0, 2 * Math.PI, true)
+    c.fill()
+    c.fillText(v, x + X0 + 10, y + Y0 + 10)
+    G[v].forEach(u => {
+      const [w, z] = nodeCoords(u)
+      c.beginPath()
+      c.moveTo(x + X0, y + Y0)
+      c.lineTo(w + X0, z + Y0)
+      c.stroke()
+    })
+  }
 }
