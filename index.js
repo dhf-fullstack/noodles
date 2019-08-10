@@ -539,7 +539,7 @@ const renderPuzzle = (board, [source_row, source_col]) => {
 renderPuzzle(board, source)
 */
 
-/* for TESTING & DEBUGGING
+/* for TESTING & DEBUGGING 
 const testGraphEdges = G => {
   const ok = true
   for (let v in G) {
@@ -561,10 +561,11 @@ const G = generateGraph(GRID_WIDTH, GRID_HEIGHT)
 //console.log('G')
 //console.dir(G)
 //renderGraph(c, G, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
-//console.log('TEST GRAPH EDGES ', testGraphEdges(G))
 
 let T // the solution tree
 let B = new Board() // current 'board': the connectors at each hex
+//console.log('B')
+//console.dir(B)
 
 const generateBtn = document.getElementById('generateBtn')
 let unsubscribeGridClick
@@ -573,33 +574,42 @@ generateBtn.addEventListener('click', _ev => {
   unsubscribeGridClick && unsubscribeGridClick()
   clearGrid()
   T = generateSpanningTree(G)
-  //console.log('T')
-  //console.dir(T)
-  //renderGraph(c, T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
+  console.log('T')
+  console.dir(T)
+  renderGraph(c, T, GRID_WIDTH, GRID_HEIGHT, HEX_X0, HEX_Y0, RX, RY)
   //console.log('TEST TREE EDGES ', testGraphEdges(T))
 
-  B.fromTree(T, GRID_HEIGHT, GRID_WIDTH)
-  B.scramble()
-  for (let b in B.B) {
-    b = Number(b)
-    const [piece, orientation] = B.B[b]
-    let [x, y] = nodeCoords(b)
-    renderConnector(x + HEX_X0, y + HEX_Y0, piece, orientation, b === B.S)
-  }
+  B.fromTree(G, T, GRID_HEIGHT, GRID_WIDTH)
+  B.render(HEX_X0, HEX_Y0, GRID_HEIGHT, GRID_WIDTH)
+  // B.scramble()
 
   unsubscribeGridClick = subscribeToCanvasClick(ev => gridOnClick(ev.x, ev.y))
 
   const gridOnClick = (x, y) => {
+    const W = GRID_WIDTH // because lazy
     const coords = pixelCoordsToHexIndex(x, y)
     if (coords != undefined) {
       const [row, col] = coords
       const v = row * GRID_WIDTH + col
       B.B[v][1] = (B.B[v][1] + 1) % 6
-      // who am I connected to now?
-      console.log(v, B.B[v])
       let [x, y] = nodeCoords(v)
-      //const [x, y] = hexIndexToCenterCoords(row, col)
+      // make active, if any active connections
+      /*
+      let connections = []
+      const code = B.patterns.getKeyBy2TupleValue(n, B.B[v][1])
+      for(let i = 0; i < 6; i++) {
+        if (code %2) { connections.push(i) }
+        code /= 2
+      }
+      for(let c in connections) {
+
+        }
+      }
+      console.log(v, B.B[v])
+      */
+      // clear the hex
       renderHex(c, x + HEX_X0, y + HEX_Y0, r)
+      // render the new orientation of the connector
       renderConnector(x + HEX_X0, y + HEX_Y0, B.B[v][0], B.B[v][1], v === B.S)
     }
   }
